@@ -19,35 +19,55 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.exyte.animatednavbar.utils.noRippleClickable
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter", "UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen() {
+    val navController = rememberNavController()
     val navigationBarItems = remember { NavigationBarItems.values() }
     var selectedIndex by remember { mutableStateOf(0) }
+    val screens = listOf(
+        BottomBarScreen.Home,
+        BottomBarScreen.Profile,
+        BottomBarScreen.Search,
+    )
+    var screen: BottomBarScreen
+
+
 
     Scaffold(
-        modifier = Modifier.padding(all = 5.dp),
+        modifier = Modifier.padding(all = 0.5.dp),
         bottomBar = {
             AnimatedNavigationBar(
                 modifier = Modifier.height(64.dp),
                 selectedIndex = selectedIndex,
-                cornerRadius = shapeCornerRadius(cornerRadius = 34.dp),
+                cornerRadius = shapeCornerRadius(34.dp,34.dp,0.dp,0.dp,),
                 ballAnimation = Parabolic(tween(300)),
                 indentAnimation = Height(tween(300)),
                 ballColor = MaterialTheme.colorScheme.primary,
                 barColor = MaterialTheme.colorScheme.primary,
             ) {
-                navigationBarItems.forEach { item ->
+
+
+                screens.forEach { item ->
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .noRippleClickable { selectedIndex = item.ordinal },
+                            .noRippleClickable {
+                                selectedIndex = item.ordinal
+                                screen = item
+                                navController.navigate(screen.route) {
+                                    popUpTo(navController.graph.findStartDestination().id)
+                                    launchSingleTop = true
+                                }
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -62,7 +82,7 @@ fun MainScreen() {
             }
         }
     ){
-    // this where we weould do the navigation
+        BottomBarNavGraph(navController = navController)
 
     }
 }
