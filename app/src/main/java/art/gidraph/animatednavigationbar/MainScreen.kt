@@ -38,7 +38,7 @@ fun MainScreen() {
         BottomBarScreen.Profile,
         BottomBarScreen.Search,
     )
-    var screen: BottomBarScreen
+    var screen: BottomBarScreen = BottomBarScreen.Home
 
 
 
@@ -62,10 +62,13 @@ fun MainScreen() {
                             .fillMaxSize()
                             .noRippleClickable {
                                 selectedIndex = item.ordinal
-                                screen = item
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id)
-                                    launchSingleTop = true
+                                if(item.ordinal != screen.ordinal) {
+                                    screen = item
+                                    navController.navigate(
+                                        screen.route) {
+                                        popUpTo(navController.graph.findStartDestination().id)
+                                        launchSingleTop = true
+                                    }
                                 }
                             },
                         contentAlignment = Alignment.Center
@@ -83,7 +86,6 @@ fun MainScreen() {
         }
     ){
         BottomBarNavGraph(navController = navController)
-
     }
 }
 
